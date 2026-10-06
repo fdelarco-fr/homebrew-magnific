@@ -29,33 +29,3 @@ jobs:
           brew install --cask fdelarco-fr/magnific/magnific
           test -d /Applications/Magnific.app
           brew uninstall --cask --zap fdelarco-fr/magnific/magnific
-name: Test cask
-
-on:
-  push:
-    paths: ["Casks/**"]
-  pull_request:
-    paths: ["Casks/**"]
-  workflow_dispatch:
-
-jobs:
-  test:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Tap this repo
-        run: |
-          mkdir -p "$(brew --repository)/Library/Taps/fdelarco-fr"
-          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/fdelarco-fr/homebrew-magnific"
-
-      - name: Style and audit
-        run: |
-          brew style fdelarco-fr/magnific
-          brew audit --cask --online fdelarco-fr/magnific/magnific
-
-      - name: Install and uninstall
-        run: |
-          brew install --cask fdelarco-fr/magnific/magnific
-          test -d /Applications/Magnific.app
-          brew uninstall --cask --zap fdelarco-fr/magnific/magnific
