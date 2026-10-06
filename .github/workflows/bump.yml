@@ -1,0 +1,45 @@
+name: Bump cask
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for a new version
+        id: check
+        run: |
+          set -euo pipefail
+          base="https://cdn.magnific.com/ait/magnific-desktop"
+          latest=$(curl -fsSL "$base/latest.json" | jq -r .version)
+          current=$(sed -nE 's/^  version "([^"]+)"/\1/p' Casks/magnific.rb)
+          echo "current=$current latest=$latest"
+          if [ "$latest" = "$current" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          arm=$(curl -fsSL "$base/$latest/macos-aarch64.dmg" | sha256sum | cut -d' ' -f1)
+          intel=$(curl -fsSL "$base/$latest/macos-x64.dmg" | sha256sum | cut -d' ' -f1)
+          sed -i -E \
+            -e "s/^  version \"[^\"]+\"/  version \"$latest\"/" \
+            -e "s/(arm: +\")[0-9a-f]{64}/\1$arm/" \
+            -e "s/(intel: \")[0-9a-f]{64}/\1$intel/" \
+            Casks/magnific.rb
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "version=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Commit
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "magnific ${{ steps.check.outputs.version }}"
+          git push
