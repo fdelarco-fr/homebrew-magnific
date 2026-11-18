@@ -1,9 +1,9 @@
 cask "magnific" do
   arch arm: "aarch64", intel: "x64"
 
-  version "1.5.4"
-  sha256 arm:   "4bbef76e1ab2ec0c9683567872e682883bb8b67dd1cd1467afb8104fcfdc2e1e",
-         intel: "de59e92f026362158e14eea0279e99ddf1093b8709613418e84ea2fd48e1a9cf"
+  version "1.5.5"
+  sha256 arm:   "c8faea2f6270a0d62239c8d447aa60b98781be689be9f2eb14345684ddff7697",
+         intel: "d29b80224ac987205d2930605ab75d45df90e0dbe457352671e330239da4253a"
 
   url "https://cdn.magnific.com/ait/magnific-desktop/#{version}/macos-#{arch}.dmg"
   name "Magnific"
